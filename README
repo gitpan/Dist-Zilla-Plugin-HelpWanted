@@ -3,23 +3,23 @@ NAME
     the distribution's META
 
 VERSION
-    version 0.2.1
+    version 0.3.0
 
 SYNOPSIS
     In dist.ini:
 
         [HelpWanted]
-        positions = maintainer co-maintainer coder translator documentation tester
+        positions = maintainer developer translator documenter tester helper
 
     or
 
         [HelpWanted]
         maintainer    = 1
-        co-maintainer = 1
-        coder         = 1
+        developer     = 1
         translator    = 1
-        documentation = 1
+        documenter    = 1
         tester        = 1
+        helper        = 1
 
 DESCRIPTION
     "Dist::Zilla::Plugin::HelpWanted" adds an "x_help_wanted" field in the
@@ -29,14 +29,20 @@ CONFIGURATION OPTIONS
     Position are passed to the plugin either via the option "positions", or
     piecemeal (see example above).
 
-    The list of possible positions is:
+    The list of possible positions (inspired by DOAP
+    <https://github.com/edumbill/doap/wiki>) is:
 
     maintainer
-    co-maintainer
-    coder
+    developer
     translator
-    documentation
+    documenter
     tester
+    helper
+
+SEE ALSO
+    OpenHatch (<http://openhatch.org/>)
+        A non-profit site dedicated to matching prospective free software
+        contributors with communities, tools, and education.
 
 AUTHOR
     Yanick Champoux <yanick@cpan.org>

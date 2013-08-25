@@ -3,7 +3,7 @@ BEGIN {
   $Dist::Zilla::Plugin::HelpWanted::AUTHORITY = 'cpan:YANICK';
 }
 {
-  $Dist::Zilla::Plugin::HelpWanted::VERSION = '0.2.1';
+  $Dist::Zilla::Plugin::HelpWanted::VERSION = '0.3.0';
 }
 # ABSTRACT: insert 'Help Wanted' information in the distribution's META
 
@@ -12,6 +12,7 @@ use strict;
 use warnings;
 
 use Moose;
+use List::MoreUtils qw(uniq);
 
 with qw/
     Dist::Zilla::Role::Plugin
@@ -25,7 +26,16 @@ my @positions = qw/
     translator 
     documentation
     tester 
+    documenter
+    developer
+    helper
 /;
+
+my %legacy = (
+    'co-maintainer'   => 'maintainer',
+    'coder'           => 'developer',
+    'documentation'   => 'documenter',
+);
 
 has [ @positions ] => (
     is => 'rw',
@@ -47,8 +57,12 @@ sub setup_installer {
             die "position '$p' not recognized\n";
     }
 
-    my @open_positions = grep { $self->$_ } @positions
-                         or return;
+    my @open_positions =
+        uniq
+        map { exists($legacy{$_}) ? $legacy{$_} : $_ }
+        grep { $self->$_ } @positions;
+
+    @open_positions or return;
 
     $self->zilla->distmeta->{x_help_wanted} = \@open_positions;
 }
@@ -58,6 +72,7 @@ no Moose;
 1;
 
 __END__
+
 =pod
 
 =head1 NAME
@@ -66,24 +81,24 @@ Dist::Zilla::Plugin::HelpWanted - insert 'Help Wanted' information in the distri
 
 =head1 VERSION
 
-version 0.2.1
+version 0.3.0
 
 =head1 SYNOPSIS
 
 In dist.ini:
 
     [HelpWanted]
-    positions = maintainer co-maintainer coder translator documentation tester
+    positions = maintainer developer translator documenter tester helper
 
 or
 
     [HelpWanted]
     maintainer    = 1
-    co-maintainer = 1
-    coder         = 1
+    developer     = 1
     translator    = 1
-    documentation = 1
+    documenter    = 1
     tester        = 1
+    helper        = 1
 
 =head1 DESCRIPTION
 
@@ -96,21 +111,32 @@ distribution.
 Position  are passed to the plugin either via the 
 option C<positions>, or piecemeal (see example above).
 
-The list of possible positions is:
+The list of possible positions (inspired by
+L<DOAP|https://github.com/edumbill/doap/wiki>) is:
 
 =over
 
-=item maintainer    
+=item maintainer
 
-=item co-maintainer
+=item developer
 
-=item coder       
+=item translator
 
-=item translator 
-
-=item documentation
+=item documenter
 
 =item tester
+
+=item helper
+
+=back
+
+=head1 SEE ALSO
+
+=over
+
+=item OpenHatch (L<http://openhatch.org/>) 
+
+A non-profit site dedicated to matching prospective free software contributors with communities, tools, and education. 
 
 =back
 
@@ -126,4 +152,3 @@ This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-
